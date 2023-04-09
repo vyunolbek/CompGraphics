@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Графика
@@ -226,12 +227,147 @@ namespace Графика
 
         }
 
+        class Sharpness2 : MatrixFilter
+        {
+            public Sharpness2()
+            {
+                kernel = new float[,] { { -1, -1, -1 }, { -1, 9, -1 }, { -1, -1, -1 } };
+            }
+        }
+
+        class Pruit : DoubleMatrix
+        {
+            public Pruit()
+            {
+                kernel1 = new float[,] { { 3, 10, 3 }, { 0, 0, 0 }, { -3, -10, -3 } };
+                kernel2 = new float[,] { { 3, 0, -3 }, { 10, 0, -10 }, { 3, 0, -3 } };
+            }
+        }
+
+        class Shartz : DoubleMatrix
+        {
+            public Shartz()
+            {
+                kernel1 = new float[,] { { -1, -1, -1 }, { 0, 0, 0 }, { 1, 1, 1 } };
+                kernel2 = new float[,] { { -1, 0, 1 }, { -1, 0, 1 }, { -1, 0, 1 } };
+            }
+        }
+
         class Sobel : DoubleMatrix
         {
             public Sobel()
             {
                 kernel1 = new float[,] { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
                 kernel2 = new float[,] { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+            }
+        }
+
+        class MatMorphology : Filters
+        {
+            protected static float[,] mask = new float[,] {
+                { 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 0, 0 },
+                { 1, 1, 1, 1, 1 },
+                { 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 0, 0 }};
+
+
+            protected int radiusX = mask.GetLength(0) / 2;
+            protected int radiusY = mask.GetLength(1) / 2;
+
+
+
+            protected override Color calculateNewPixel(Bitmap sourceImage, int x, int y)
+            {
+                return Color.FromArgb(0, 0, 0);
+            }
+        }
+
+        //Расширение
+        class DilationFilter : MatMorphology
+        {
+
+            protected override Color calculateNewPixel(Bitmap sourceImage, int x, int y)
+            {
+                int maxR = 0;
+                int maxG = 0;
+                int maxB = 0;
+
+                for (int k = -radiusX; k <= radiusX; k++)
+                {
+                    for (int l = -radiusY; l <= radiusY; l++)
+                    {
+                        int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                        int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                        if (mask[k + radiusX, l + radiusY] == 1)
+                        {
+                            Color color = sourceImage.GetPixel(idX, idY);
+                            maxR = Math.Max(maxR, color.R);
+                            maxG = Math.Max(maxG, color.G);
+                            maxB = Math.Max(maxB, color.B);
+                        }
+                    }
+                }
+                return Color.FromArgb(maxR, maxG, maxB);
+            }
+        }
+
+        class ErosionFilter : MatMorphology
+        {
+
+            protected override Color calculateNewPixel(Bitmap sourceImage, int x, int y)
+            {
+                int minR = 255;
+                int minG = 255;
+                int minB = 255;
+
+                for (int k = -radiusX; k <= radiusX; k++)
+                {
+                    for (int l = -radiusY; l <= radiusY; l++)
+                    {
+                        int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                        int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                        if (mask[k + radiusX, l + radiusY] == 1)
+                        {
+                            Color color = sourceImage.GetPixel(idX, idY);
+                            minR = Math.Min(minR, color.R);
+                            minG = Math.Min(minG, color.G);
+                            minB = Math.Min(minB, color.B);
+                        }
+                    }
+                }
+                return Color.FromArgb(minR, minG, minB);
+            }
+        }
+
+        class Median : MatMorphology
+        {
+            protected override Color calculateNewPixel(Bitmap sourceImage, int x, int y)
+            {
+                int R = 0;
+                int G = 0;
+                int B = 0;
+                int maxColor = 0;
+
+
+                for (int k = -radiusX; k <= radiusX; k++)
+                {
+                    for (int l = -radiusY; l <= radiusY; l++)
+                    {
+                        int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                        int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                        if (mask[k + radiusX, l + radiusY] == 1)
+                        {
+                            Color color = sourceImage.GetPixel(idX, idY);
+                            maxColor = Math.Max(color.R, color.G, color.B);
+                        }
+                    }
+                }
+
+                return Color.FromArgb(R, G, B);
             }
         }
 
@@ -242,10 +378,7 @@ namespace Графика
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void Form1_Load(object sender, EventArgs e) { }
 
         private void открытьToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -332,6 +465,36 @@ namespace Графика
         private void собельToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new Sobel();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void резкостьToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Filters filter = new Sharpness2();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void операторПрюитаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new Pruit();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void операторШартцаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new Shartz();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void расширениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new DilationFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void эрозияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new ErosionFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
     }
