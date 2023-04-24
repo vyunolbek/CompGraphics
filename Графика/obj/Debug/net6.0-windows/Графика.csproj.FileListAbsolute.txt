@@ -1,0 +1,17 @@
+D:\Графика\Графика\Графика\bin\Debug\net6.0-windows\Графика.exe
+D:\Графика\Графика\Графика\bin\Debug\net6.0-windows\Графика.deps.json
+D:\Графика\Графика\Графика\bin\Debug\net6.0-windows\Графика.runtimeconfig.json
+D:\Графика\Графика\Графика\bin\Debug\net6.0-windows\Графика.dll
+D:\Графика\Графика\Графика\bin\Debug\net6.0-windows\Графика.pdb
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.csproj.AssemblyReference.cache
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.Form1.resources
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.csproj.GenerateResource.cache
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.GeneratedMSBuildEditorConfig.editorconfig
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.AssemblyInfoInputs.cache
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.AssemblyInfo.cs
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.csproj.CoreCompileInputs.cache
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.dll
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\refint\Графика.dll
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.pdb
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\Графика.genruntimeconfig.cache
+D:\Графика\Графика\Графика\obj\Debug\net6.0-windows\ref\Графика.dll
